@@ -38,24 +38,14 @@ server.listen(app.get('port'), function(){
 
 io.enable("browser client minification");
 io.enable("browser client etag");
-//io.enable("browser client gzip");
+io.enable("browser client gzip");
 io.set("log level",1);
 io.set("transports", ["xhr-polling"]);
 io.set("polling duration", 10);
 
 io.on("connection", function(client) {
 	console.log("novo cliente conectado");
-	
-	client.on("novo-produto", function(produto) {
-		console.log("recebi um novo produto");
-		client.get("usuario", function(error,usuario) {
-			produto.email=usuario.email;
-			console.log(produto);
-			//client.broadcast.emit("novo-produto-disponivel", produto);
-			io.sockets.in(usuario.categoria).emit("novo-produto-disponivel", produto);
-		});
-		
-	});
+
 	client.on("disconnect", function() {
 		console.log("desconectando");
 		client.get("usuario", function(error,usuario){
@@ -69,9 +59,9 @@ io.on("connection", function(client) {
 
 	client.on("login", function(usuario, callback) {
 		console.log(usuario);
-		if(usuario.senha.length >= 6) {
+		if(isEmail(usuario.email)) {
 			client.set("usuario", usuario);
-			client.join(usuario.categoria);
+			client.join(usuario.sala);
 			callback({
 				sucesso:true,
 				mensagem : "Logado como " + usuario.email + " na categoria " + usuario.categoria
@@ -79,10 +69,28 @@ io.on("connection", function(client) {
 		} else {
 			callback({
 				sucesso:false,
-				mensagem : "senha muito curta"
+				mensagem : "E-mail invalido"
 			})
 		}
 	});
+
+	client.on("mensagem", function(mensagem) {
+		console.log("recebi uma nova mensagem: ");
+		client.get("usuario", function(error,usuario) {
+			var msg = {
+				"usuario" : usuario,
+				"mensagem" : mensagem
+			};
+			console.log(msg);
+			io.sockets.in(usuario.sala).emit("nova-mensagem", msg);
+		});
+		
+	});
+
+	function isEmail(email){
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(email);
+	}
 
 });
 

@@ -1,114 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Mercadao</title>
+    <title>nodechat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/assets/js/html5shiv.js"></script>
+      <script src="/assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-<script src="/javascripts/jquery-1.10.2.min.js"></script>
+	<script src="/javascripts/jquery-1.10.2.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
-	<script>
-	$(function() {
-		var socket = io.connect(document.URL);
-
-		socket.on("connect", function() {
-			console.log("Conectado");
-		});
-
-		socket.on("disconnect", function() {
-			console.log("Desconectado");
-		});
-
-		socket.on("connecting", function() {
-			console.log("conectando...");
-		});
-
-		socket.on("error", function() {
-			console.log("deu ereo !");
-		});
-
-		socket.on("reconnecting", function() {
-			console.log("terntando reconectar");
-		});
-
-		socket.on("logout", function(email) {
-			console.log("deslogando o usuario " + email);
-			$(".produto-a-venda").each(function (i, element) {
-				var div = $(element);
-
-				if(div.data("email")==email) {
-					div.remove();
-				}
-
-			});
-		});
-
-		socket.on("novo-produto-disponivel", function(produto) {
-			console.log("recebido novo produto ");
-			console.log(produto);
-
-			var conteudo = produto.nome+" por "+ produto.preco+" de "+produto.email;
-
-			var div = $("<div class='produto-a-venda' />");
-			div.attr("data-email", produto.email);
-			div.html(conteudo);
-
-			$("#ultimo-produto-disponivel").html(div);
-			$("#todos-os-produtos").append(div.clone());
-		});
-
-		$("#login").submit(function(event) {
-			var email = $("#email").val();
-			var senha = $("#senha").val();
-			var categoria = $("#categoria").val();
-			var usuario = {
-				"email" : email,
-				"senha" : senha,
-				"categoria" : categoria,
-			};
-			socket.emit("login", usuario, function (dados) {
-				if(dados.sucesso) {
-					$("#login").hide();
-					$("#area-novo-produto").show();
-				}
-				$("#mensagem-login").html(dados.mensagem);
-			});
-
-			console.log("Login")
-			event.preventDefault();
-		});
-
-		$("#novo-produto").submit(function(event) {
-			var nome = $("#nome").val();
-			var preco = $("#preco").val();
-			var produto = {
-				"nome" : nome,
-				"preco" : preco
-			};
-			console.log("Cadastrando "+nome+" "+preco);
-			socket.emit("novo-produto", produto);
-			event.preventDefault();
-		});
-	});	
-	</script>
+	<script src="/javascripts/nodechat.js"></script>
   </head>
   <body>
-	<form id="login">
-		<input type="text" id="email" placeholder="Digite seu e-mail">
-		<input type="password" id="senha">
-		<input id="categoria" type="text" placeholder="Categoria de seu interesse">
-		<input type="submit" value="login">
-	</form>
-	<div id="mensagem-login" ></div>
-	<h1>Todos os Produtos</h1>
-	<div id="todos-os-produtos"></div>
-	<h1>Último produto disponível</h1>
-	<div id="ultimo-produto-disponivel"></div>
-	<div id="area-novo-produto">
-	    <h1>Novo produto</h1>
-		<form id="novo-produto">
-			<input id="nome" type="text" placeholder="Nome do Produto">
-			<input id="preco" type="number" placeholder="Preco do Produto">
-			<input type="submit" value="cadastrar">
-		</form>
-	</div>
-  </body>
+  	<div class="container">
+
+      <form id="login" class="form-signin">
+        <h2 class="form-signin-heading">Entre no chat</h2>
+        <input type="text" class="form-control" placeholder="E-mail" id="email" autofocus>
+        <input type="text" class="form-control second" placeholder="Sala" id="sala">
+		<div id="mensagem-login" class="alert alert-warning hide"></div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+      </form>
+
+	    <div id="chat" class="hide">
+		    <div class="panel panel-default">
+				<div class="panel-heading">
+				    <h3 class="panel-title">Chat</h3>
+				</div>
+			  	<div id="mensagens" class="panel-body">
+			  	</div>
+			</div>
+			<form id="send">
+				<input type="text" class="form-control" placeholder="Mensagem..." id="mensagem" autofocus>
+				<button class="btn" id="enviar" type="submit">Enviar</button>
+			</form>
+		</div>
+    </div> 
+ </body>
 </html>
