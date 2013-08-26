@@ -62,6 +62,7 @@ io.on("connection", function(client) {
 		if(isEmail(usuario.email)) {
 			client.set("usuario", usuario);
 			client.join(usuario.sala);
+			client.broadcast.emit("entrou", usuario.email);
 			callback({
 				sucesso:true,
 				mensagem : "Logado como " + usuario.email + " na categoria " + usuario.categoria

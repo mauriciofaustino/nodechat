@@ -30,6 +30,15 @@ $(function() {
 		$("#mensagens").append(p);
 	});
 
+	socket.on("entrou", function(email) {
+		console.log(""+email+" entrou na sala...");
+		var conteudo = "<strong>"+email+" entrou na sala...</strong>";
+
+		var p = $("<p />");
+		p.html(conteudo);
+		$("#mensagens").append(p);
+	});
+
 	$("#login").submit(function(event) {
 		var email = $("#email").val();
 		var sala = $("#sala").val();
