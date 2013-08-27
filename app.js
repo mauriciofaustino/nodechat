@@ -78,6 +78,7 @@ io.on("connection", function(client) {
 	client.on("mensagem", function(mensagem) {
 		console.log("recebi uma nova mensagem: ");
 		client.get("usuario", function(error,usuario) {
+			mensagem = mensagem.replace(/(<([^>]+)>)/ig,"");
 			var msg = {
 				"usuario" : usuario,
 				"mensagem" : mensagem
