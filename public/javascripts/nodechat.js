@@ -1,6 +1,6 @@
 $(function() {
 	var socket = io.connect(document.URL);
-	
+
 	socket.on("connecting", function() {
 		console.log("Conectando...");
 	});
@@ -71,7 +71,7 @@ $(function() {
 		console.log("recebido nova mensagem ");
 		console.log(msg);
 
-		var conteudo = "<strong>"+msg.usuario.email+"</strong>: "+ msg.mensagem;
+		var conteudo = '<img src="http://www.gravatar.com/avatar/'+hex_md5(msg.usuario.email)+'?s=36" />: '+ msg.mensagem;
 
 		var p = $("<p class='msg' />");
 		p.attr("data-email", msg.usuario.email);
@@ -80,4 +80,4 @@ $(function() {
 		$("#mensagens").append(p);
 	});
 
-});	
+});
